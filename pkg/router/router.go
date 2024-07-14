@@ -44,7 +44,7 @@ type onboardResponse struct {
 // Listener handle Post request and print addpatient
 func (r *RouterImplimentation) AddPatient(ctx context.Context, input *addPatient) (*onboardResponse, error) {
 	patientInfo := input.Body
-	if err := r.DB.CreatePatient(patientInfo.CreatePatient); err != nil {
+	if err := r.DB.CreatePatient(&patientInfo.CreatePatient); err != nil {
 		spew.Dump(patientInfo)
 		return nil, err
 	}

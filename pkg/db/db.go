@@ -48,7 +48,7 @@ func initDb(pgpool *pgxpool.Pool) error {
 }
 
 type DB interface {
-	CreatePatient(sql.CreatePatient) error
+	CreatePatient(*sql.CreatePatient) error
 	Close()
 }
 
@@ -56,7 +56,7 @@ func (d *DBImpl) Close() {
 	d.Pool.Close()
 }
 
-func (d *DBImpl) CreatePatient(patient sql.CreatePatient) error {
+func (d *DBImpl) CreatePatient(patient *sql.CreatePatient) error {
 	sql := "INSERT INTO users (first_name, last_name, age, date_of_birth, blood_group, phone_number, address) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 	if _, err := d.Pool.Exec(context.Background(), sql, patient.FirstName, patient.LastName, patient.Age, patient.DateOfBirth, patient.BloodGroup, patient.PhoneNumber, patient.Address); err != nil {
 		return err
