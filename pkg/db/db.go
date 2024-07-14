@@ -40,7 +40,7 @@ func initDb(pgpool *pgxpool.Pool) error {
         age INT,
         date_of_birth DATE,
         blood_group VARCHAR(5),
-        phone_number BIGINT,
+        phone_number VARCHAR(13),
         address TEXT
     );`
 	_, err := pgpool.Exec(context.Background(), schema)
