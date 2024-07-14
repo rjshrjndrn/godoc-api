@@ -17,7 +17,12 @@ func main() {
 	}
 	defer routerImp.DB.Close()
 	httpRouter := http.NewServeMux()
-	api := humago.New(httpRouter, huma.DefaultConfig("GoDoc", "1.0.0"))
+	cfg := huma.DefaultConfig("GoDoc", "v1.0.0")
+	// Disabling the url schema from output
+	// https://github.com/danielgtaylor/huma/issues/230#issuecomment-1927998004
+	cfg.CreateHooks = []func(huma.Config) huma.Config{}
+
+	api := humago.New(httpRouter, cfg)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "Adding patient",
