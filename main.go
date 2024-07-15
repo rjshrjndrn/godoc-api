@@ -43,5 +43,5 @@ func main() {
 	}, routerImp.GetPatient)
 
 	log.Println("Starting api at :8080")
-	http.ListenAndServe(":8080", httpRouter)
+	http.ListenAndServe(":8000", httpRouter)
 }
