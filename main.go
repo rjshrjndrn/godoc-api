@@ -33,6 +33,15 @@ func main() {
 		Tags:        []string{"patient"},
 	}, routerImp.AddPatient)
 
+	huma.Register(api, huma.Operation{
+		OperationID: "Search patient",
+		Method:      http.MethodGet,
+		Path:        "/patient/{firstName}",
+		Summary:     "Search a patient.",
+		Description: "Search a patient.",
+		Tags:        []string{"patient"},
+	}, routerImp.GetPatient)
+
 	log.Println("Starting api at :8080")
 	http.ListenAndServe(":8080", httpRouter)
 }
