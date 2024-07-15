@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"godoc/internal/datastructures/sql"
 	"log"
 
@@ -50,6 +52,7 @@ func initDb(pgpool *pgxpool.Pool) error {
 type DB interface {
 	CreatePatient(*sql.PatientInfo) error
 	SearchPatient(name string) (*[]sql.PatientInfo, error)
+	ListPatients(limit, page int) (*[]sql.PatientInfo, error)
 	Close()
 }
 
@@ -69,6 +72,25 @@ func (d *DBImpl) SearchPatient(name string) (*[]sql.PatientInfo, error) {
 	query := "SELECT * FROM users WHERE first_name = $1"
 	// search for all rows matching the name
 	rows, err := d.Pool.Query(context.Background(), query, name)
+	if err != nil {
+		return nil, err
+	}
+	data, err := pgx.CollectRows(rows, pgx.RowToStructByName[sql.PatientInfo])
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
+// List all Patient with pagination
+func (d *DBImpl) ListPatients(limit, page int) (*[]sql.PatientInfo, error) {
+	if limit <= 0 || page <= 0 {
+		return nil, errors.New("limit, page must be greater than 0")
+	}
+	page = page - 1
+	query := fmt.Sprintf("SELECT * FROM users limit %d offset %d", limit, page*limit)
+	// search for all rows matching the name
+	rows, err := d.Pool.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}

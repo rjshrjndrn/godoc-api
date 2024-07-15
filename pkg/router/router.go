@@ -41,6 +41,9 @@ type addPatient struct {
 type getPatient struct {
 	FirstName string `path:"firstName" doc:"first name of patient"`
 }
+type listPatients struct {
+	Page int `path:"page" doc:"Page number for response. Each page will contain 10 items."`
+}
 
 type generalResponse struct {
 	Success bool
@@ -65,6 +68,19 @@ type getPatientResponse struct {
 func (r *RouterImplimentation) GetPatient(ctx context.Context, input *getPatient) (*getPatientResponse, error) {
 	log.Print(input.FirstName)
 	data, err := r.DB.SearchPatient(input.FirstName)
+	if err != nil {
+		return nil, err
+	}
+	pi := &getPatientResponse{
+		Body: struct {
+			Patients *[]sql.PatientInfo `json:"patients"`
+		}{Patients: data},
+	}
+	return pi, nil
+}
+
+func (r *RouterImplimentation) ListPatients(ctx context.Context, input *listPatients) (*getPatientResponse, error) {
+	data, err := r.DB.ListPatients(10, input.Page)
 	if err != nil {
 		return nil, err
 	}

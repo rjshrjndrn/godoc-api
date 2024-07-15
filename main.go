@@ -42,6 +42,15 @@ func main() {
 		Tags:        []string{"patient"},
 	}, routerImp.GetPatient)
 
+	huma.Register(api, huma.Operation{
+		OperationID: "List all users with pagination",
+		Method:      http.MethodGet,
+		Path:        "/patients/{page}",
+		Summary:     "List all patients.",
+		Description: "List all patients.",
+		Tags:        []string{"patient"},
+	}, routerImp.ListPatients)
+
 	log.Println("Starting api at :8080")
 	http.ListenAndServe(":8000", httpRouter)
 }
