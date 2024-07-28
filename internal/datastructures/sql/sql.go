@@ -45,6 +45,9 @@ type PatientInfo struct {
 	State            *string `json:"state" doc:"State of the user" required:"false"`
 	City             *string `json:"city" doc:"City of the user" required:"false"`
 	DateOfBirth      Date    `json:"dateOfBirth" doc:"Date of birth of the user" required:"false" format:"date"`
+	*Allergies
+	*MedicalHistory
+	*HospitalizationHistory
 }
 
 type Allergies struct {
