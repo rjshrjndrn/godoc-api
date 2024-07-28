@@ -41,7 +41,7 @@ func initDb(pgpool *pgxpool.Pool) error {
         last_name VARCHAR(50),
         age INT,
         date_of_birth DATE,
-        blood_group VARCHAR(5),
+        blood_group VARCHAR(10),
         phone_number VARCHAR(13),
         address TEXT
     );`
