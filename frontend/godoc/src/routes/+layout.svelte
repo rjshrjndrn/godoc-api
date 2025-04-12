@@ -1,8 +1,15 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
-	const domainName = 'MedClinic';
+	let domainName = $state('MedClinic');
+	onMount(() => {
+		// Extract domain name from URL when component mounts
+		domainName = window.location.hostname.split('.')[0];
+		// Make first letter uppercase for better display
+		domainName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+	});
 </script>
 
 <div class="min-h-screen bg-gray-50">
