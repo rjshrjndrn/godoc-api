@@ -110,7 +110,7 @@
 				</div>
 
 				<div class="text-sm">
-					<a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+					<a href="/reset-password" class="font-medium text-blue-600 hover:text-blue-500">
 						Forgot your password?
 					</a>
 				</div>
