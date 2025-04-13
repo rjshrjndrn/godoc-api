@@ -1,18 +1,74 @@
 <script lang="ts">
 	// Patient data interface
 	interface Patient {
+		id: string;
 		name: string;
 		time: string;
 		mobileNumber: string;
+		address: string;
+		remainingFees: number;
+		diagnostics: string;
+		allergies: string;
+		existingIssues: string;
 	}
 
 	// Dummy patient data
 	const patients: Patient[] = [
-		{ name: 'John Smith', time: '09:30 AM', mobileNumber: '(555) 123-4567' },
-		{ name: 'Sarah Johnson', time: '10:15 AM', mobileNumber: '(555) 234-5678' },
-		{ name: 'Robert Williams', time: '11:45 AM', mobileNumber: '(555) 345-6789' },
-		{ name: 'Emily Brown', time: '01:30 PM', mobileNumber: '(555) 456-7890' },
-		{ name: 'Michael Davis', time: '02:45 PM', mobileNumber: '(555) 567-8901' }
+		{
+			id: 'p001',
+			name: 'John Smith',
+			time: '09:30 AM',
+			mobileNumber: '(555) 123-4567',
+			address: '123 Main St, Anytown',
+			remainingFees: 150,
+			diagnostics: 'Type 2 Diabetes',
+			allergies: 'Penicillin',
+			existingIssues: 'Hypertension, High Cholesterol'
+		},
+		{
+			id: 'p002',
+			name: 'Sarah Johnson',
+			time: '10:15 AM',
+			mobileNumber: '(555) 234-5678',
+			address: '456 Oak Ave, Somewhere',
+			remainingFees: 75,
+			diagnostics: 'Arthritis',
+			allergies: 'Latex',
+			existingIssues: 'Asthma'
+		},
+		{
+			id: 'p003',
+			name: 'Robert Williams',
+			time: '11:45 AM',
+			mobileNumber: '(555) 345-6789',
+			address: '789 Pine Blvd, Elsewhere',
+			remainingFees: 200,
+			diagnostics: 'Hypertension',
+			allergies: 'None',
+			existingIssues: 'Anxiety, Insomnia'
+		},
+		{
+			id: 'p004',
+			name: 'Emily Brown',
+			time: '01:30 PM',
+			mobileNumber: '(555) 456-7890',
+			address: '101 Maple Dr, Nowhere',
+			remainingFees: 0,
+			diagnostics: 'Migraine',
+			allergies: 'Sulfa drugs',
+			existingIssues: 'Depression'
+		},
+		{
+			id: 'p005',
+			name: 'Michael Davis',
+			time: '02:45 PM',
+			mobileNumber: '(555) 567-8901',
+			address: '202 Cedar Ln, Anywhere',
+			remainingFees: 50,
+			diagnostics: 'GERD',
+			allergies: 'Shellfish',
+			existingIssues: 'Back pain, Obesity'
+		}
 	];
 
 	// Form state
@@ -22,7 +78,12 @@
 		time: '',
 		date: '',
 		timeInput: '',
-		mobileNumber: ''
+		mobileNumber: '',
+		address: '',
+		remainingFees: 0,
+		diagnostics: '',
+		allergies: '',
+		existingIssues: ''
 	});
 
 	// Function to add a new patient
@@ -41,10 +102,17 @@
 		}
 
 		// Add the new patient to the list
+		// Add the new patient to the list
 		patients.push({
+			id: `p${String(patients.length + 1).padStart(3, '0')}`,
 			name: newPatient.name,
 			time: formattedTime,
-			mobileNumber: newPatient.mobileNumber
+			mobileNumber: newPatient.mobileNumber,
+			address: newPatient.address,
+			remainingFees: newPatient.remainingFees,
+			diagnostics: newPatient.diagnostics,
+			allergies: newPatient.allergies,
+			existingIssues: newPatient.existingIssues
 		});
 
 		// Reset the form
@@ -53,7 +121,12 @@
 			time: '',
 			date: '',
 			timeInput: '',
-			mobileNumber: ''
+			mobileNumber: '',
+			address: '',
+			remainingFees: 0,
+			diagnostics: '',
+			allergies: '',
+			existingIssues: ''
 		};
 
 		// Close the modal
@@ -102,7 +175,11 @@
 			<tbody>
 				{#each patients as patient}
 					<tr class="hover:bg-gray-50">
-						<td class="py-3 px-4 border-b border-gray-200">{patient.name}</td>
+						<td class="py-3 px-4 border-b border-gray-200"
+							><a href={`/patients/${patient.id}`} class="text-blue-600 hover:underline"
+								>{patient.name}</a
+							></td
+						>
 						<td class="py-3 px-4 border-b border-gray-200">{patient.time}</td>
 						<td class="py-3 px-4 border-b border-gray-200">{patient.mobileNumber}</td>
 					</tr>
@@ -214,4 +291,3 @@
 		</div>
 	</div>
 {/if}
-
