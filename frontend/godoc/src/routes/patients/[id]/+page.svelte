@@ -1,78 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
-	// Patient data interface
-	interface Patient {
-		id: string;
-		name: string;
-		time: string;
-		mobileNumber: string;
-		address: string;
-		remainingFees: number;
-		diagnostics: string;
-		allergies: string;
-		existingIssues: string;
-	}
-
-	// For actual implementation, you would fetch this from an API
-	// Here we use dummy data that matches the patients list
-	const dummyPatients: Patient[] = [
-		{
-			id: 'p001',
-			name: 'John Smith',
-			time: '09:30 AM',
-			mobileNumber: '(555) 123-4567',
-			address: '123 Main St, Anytown',
-			remainingFees: 150,
-			diagnostics: 'Type 2 Diabetes',
-			allergies: 'Penicillin',
-			existingIssues: 'Hypertension, High Cholesterol'
-		},
-		{
-			id: 'p002',
-			name: 'Sarah Johnson',
-			time: '10:15 AM',
-			mobileNumber: '(555) 234-5678',
-			address: '456 Oak Ave, Somewhere',
-			remainingFees: 75,
-			diagnostics: 'Arthritis',
-			allergies: 'Latex',
-			existingIssues: 'Asthma'
-		},
-		{
-			id: 'p003',
-			name: 'Robert Williams',
-			time: '11:45 AM',
-			mobileNumber: '(555) 345-6789',
-			address: '789 Pine Blvd, Elsewhere',
-			remainingFees: 200,
-			diagnostics: 'Hypertension',
-			allergies: 'None',
-			existingIssues: 'Anxiety, Insomnia'
-		},
-		{
-			id: 'p004',
-			name: 'Emily Brown',
-			time: '01:30 PM',
-			mobileNumber: '(555) 456-7890',
-			address: '101 Maple Dr, Nowhere',
-			remainingFees: 0,
-			diagnostics: 'Migraine',
-			allergies: 'Sulfa drugs',
-			existingIssues: 'Depression'
-		},
-		{
-			id: 'p005',
-			name: 'Michael Davis',
-			time: '02:45 PM',
-			mobileNumber: '(555) 567-8901',
-			address: '202 Cedar Ln, Anywhere',
-			remainingFees: 50,
-			diagnostics: 'GERD',
-			allergies: 'Shellfish',
-			existingIssues: 'Back pain, Obesity'
-		}
-	];
+	import {
+		type Patient,
+		BUTTON_CLASSES,
+		FORM_CLASSES,
+		LAYOUT_CLASSES,
+		patientsStore,
+		patientStoreActions
+	} from '$lib/constants/patients';
 
 	let patient: Patient | undefined = $state(undefined);
 	let editMode = $state(false);
@@ -91,15 +26,19 @@
 	function loadPatient() {
 		if (!patientId) return;
 
-		// In a real app, you would fetch the patient data from an API
-		// Here we simulate by finding the patient in our dummy data
-		patient = dummyPatients.find((p) => p.id === patientId);
+		// Subscribe to the store to get the most up-to-date patient data
+		const unsubscribe = patientsStore.subscribe((patients) => {
+			patient = patients.find((p) => p.id === patientId);
 
-		if (!patient) {
-			notFound = true;
-		} else {
-			notFound = false;
-		}
+			if (!patient) {
+				notFound = true;
+			} else {
+				notFound = false;
+			}
+		});
+
+		// Clean up subscription on component unmount
+		return unsubscribe;
 	}
 
 	function startEdit() {
@@ -116,16 +55,13 @@
 	function saveChanges() {
 		if (!patientCopy) return;
 
-		// In a real app, you would send an API request to update the patient
-		// Here we update our local state
+		// Update the patient in the store
+		patientStoreActions.updatePatient({ ...patientCopy });
+
+		// Update the local patient object
 		patient = { ...patientCopy };
 
-		// Also update the patient in the dummy list (to persist changes if we navigate away and back)
-		const index = dummyPatients.findIndex((p) => p.id === patient?.id);
-		if (index !== -1) {
-			dummyPatients[index] = { ...patient };
-		}
-
+		// Exit edit mode
 		editMode = false;
 	}
 </script>

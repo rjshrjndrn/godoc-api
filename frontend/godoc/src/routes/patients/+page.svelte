@@ -1,78 +1,20 @@
 <script lang="ts">
-	// Patient data interface
-	interface Patient {
-		id: string;
-		name: string;
-		time: string;
-		mobileNumber: string;
-		address: string;
-		remainingFees: number;
-		diagnostics: string;
-		allergies: string;
-		existingIssues: string;
-	}
+	import {
+		type Patient,
+		BUTTON_CLASSES,
+		FORM_CLASSES,
+		LAYOUT_CLASSES,
+		patientsStore,
+		patientStoreActions
+	} from '$lib/constants/patients';
 
-	// Dummy patient data
-	const patients: Patient[] = [
-		{
-			id: 'p001',
-			name: 'John Smith',
-			time: '09:30 AM',
-			mobileNumber: '(555) 123-4567',
-			address: '123 Main St, Anytown',
-			remainingFees: 150,
-			diagnostics: 'Type 2 Diabetes',
-			allergies: 'Penicillin',
-			existingIssues: 'Hypertension, High Cholesterol'
-		},
-		{
-			id: 'p002',
-			name: 'Sarah Johnson',
-			time: '10:15 AM',
-			mobileNumber: '(555) 234-5678',
-			address: '456 Oak Ave, Somewhere',
-			remainingFees: 75,
-			diagnostics: 'Arthritis',
-			allergies: 'Latex',
-			existingIssues: 'Asthma'
-		},
-		{
-			id: 'p003',
-			name: 'Robert Williams',
-			time: '11:45 AM',
-			mobileNumber: '(555) 345-6789',
-			address: '789 Pine Blvd, Elsewhere',
-			remainingFees: 200,
-			diagnostics: 'Hypertension',
-			allergies: 'None',
-			existingIssues: 'Anxiety, Insomnia'
-		},
-		{
-			id: 'p004',
-			name: 'Emily Brown',
-			time: '01:30 PM',
-			mobileNumber: '(555) 456-7890',
-			address: '101 Maple Dr, Nowhere',
-			remainingFees: 0,
-			diagnostics: 'Migraine',
-			allergies: 'Sulfa drugs',
-			existingIssues: 'Depression'
-		},
-		{
-			id: 'p005',
-			name: 'Michael Davis',
-			time: '02:45 PM',
-			mobileNumber: '(555) 567-8901',
-			address: '202 Cedar Ln, Anywhere',
-			remainingFees: 50,
-			diagnostics: 'GERD',
-			allergies: 'Shellfish',
-			existingIssues: 'Back pain, Obesity'
-		}
-	];
+	// Subscribe to the store
+	let patients: Patient[] = $state([]);
+	patientsStore.subscribe((value) => {
+		patients = value;
+	});
 
 	// Form state
-	let isModalOpen = $state(false);
 	let newPatient = $state({
 		name: '',
 		time: '',
@@ -86,61 +28,13 @@
 		existingIssues: ''
 	});
 
-	// Function to add a new patient
-	function addPatient() {
-		// Combine date and time inputs into a formatted string
-		let formattedTime = '';
-		if (newPatient.date && newPatient.timeInput) {
-			const dateObj = new Date(`${newPatient.date}T${newPatient.timeInput}`);
-			formattedTime = dateObj.toLocaleString('en-US', {
-				month: 'short',
-				day: 'numeric',
-				hour: 'numeric',
-				minute: 'numeric',
-				hour12: true
-			});
-		}
-
-		// Add the new patient to the list
-		// Add the new patient to the list
-		patients.push({
-			id: `p${String(patients.length + 1).padStart(3, '0')}`,
-			name: newPatient.name,
-			time: formattedTime,
-			mobileNumber: newPatient.mobileNumber,
-			address: newPatient.address,
-			remainingFees: newPatient.remainingFees,
-			diagnostics: newPatient.diagnostics,
-			allergies: newPatient.allergies,
-			existingIssues: newPatient.existingIssues
-		});
-
-		// Reset the form
-		newPatient = {
-			name: '',
-			time: '',
-			date: '',
-			timeInput: '',
-			mobileNumber: '',
-			address: '',
-			remainingFees: 0,
-			diagnostics: '',
-			allergies: '',
-			existingIssues: ''
-		};
-
-		// Close the modal
-		isModalOpen = false;
-	}
+	let isModalOpen = $state(false);
 </script>
 
-<div class="max-w-3xl mx-auto p-4">
+<div class={LAYOUT_CLASSES.PAGE_CONTAINER}>
 	<div class="flex justify-between items-center mb-6">
 		<h1 class="text-2xl font-bold">Patient Records</h1>
-		<button
-			onclick={() => (isModalOpen = true)}
-			class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center"
-		>
+		<button onclick={() => (isModalOpen = true)} class={BUTTON_CLASSES.PRIMARY_WITH_ICON}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				class="h-5 w-5 mr-2"
@@ -195,9 +89,9 @@
 			<div class="flex justify-between items-center mb-4">
 				<h2 class="text-xl font-bold">Add New Patient</h2>
 				<button
-					aria-label="clock"
+					aria-label="close"
 					onclick={() => (isModalOpen = false)}
-					class="text-gray-500 hover:text-gray-700"
+					class={BUTTON_CLASSES.CLOSE}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -219,7 +113,33 @@
 			<form
 				onsubmit={(e) => {
 					e.preventDefault();
-					addPatient();
+
+					// Format time from date and time inputs
+					let formattedTime = '';
+					if (newPatient.date && newPatient.timeInput) {
+						const dateObj = new Date(`${newPatient.date}T${newPatient.timeInput}`);
+						formattedTime = dateObj.toLocaleString('en-US', {
+							hour: 'numeric',
+							minute: 'numeric',
+							hour12: true
+						});
+					}
+
+					// Create new patient object with required fields
+					const patient: Patient = {
+						id: `p${String(patients.length + 1).padStart(3, '0')}`,
+						name: newPatient.name,
+						time: formattedTime,
+						mobileNumber: newPatient.mobileNumber,
+						address: newPatient.address || '',
+						remainingFees: newPatient.remainingFees || 0,
+						diagnostics: newPatient.diagnostics || '',
+						allergies: newPatient.allergies || '',
+						existingIssues: newPatient.existingIssues || ''
+					};
+
+					patientStoreActions.addPatient(patient);
+					isModalOpen = false;
 				}}
 				class="space-y-4"
 			>
