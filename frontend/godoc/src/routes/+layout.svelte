@@ -12,6 +12,15 @@
 	});
 </script>
 
+<!-- Add Flowbite CSS and JS via CDN -->
+<svelte:head>
+	<link
+		href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.css"
+		rel="stylesheet"
+	/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
+</svelte:head>
+
 <div class="min-h-screen bg-gray-50">
 	<header class="bg-white shadow">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
