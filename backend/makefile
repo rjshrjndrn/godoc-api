@@ -3,3 +3,6 @@ help: ## Prints help for targets with comments
 
 run: ## run the app
 	go run .
+
+build: ## build the app
+	CGO_ENABLED=0 go build -o backend ./main.go
