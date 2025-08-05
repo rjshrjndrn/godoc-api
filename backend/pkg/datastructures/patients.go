@@ -1,13 +1,6 @@
-package main
+package datastructures
 
-import (
-	"fmt"
-	"godoc/pkg/router"
-	"log"
-	"net/http"
-)
-
-type UserData struct {
+type PatientData struct {
 	Title      string `json:"title"`
 	FirstName  string `json:"firstName"`
 	LastName   string `json:"lastName"`
@@ -24,11 +17,8 @@ type UserData struct {
 	City       string `json:"city"`
 }
 
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/userdata", router.HandleUserData)
-	mux.HandleFunc("/v1/users", router.ListUsers)
-
-	fmt.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+type PatientListResponse struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	MobileNo  string `json:"mobileNo"`
 }

@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"godoc/pkg/datastructures"
 	"os"
 	"path/filepath"
 )
@@ -13,6 +14,7 @@ type Storage interface {
 	Load(username, mobileNumber string, data interface{}) error
 	Delete(username, mobileNumber string) error
 	Exists(username, mobileNumber string) bool
+	List() datastructures.PatientListResponse
 }
 
 // JSONFileStorage implements Storage interface using JSON files
@@ -85,4 +87,47 @@ func (j *JSONFileStorage) Exists(username, mobileNumber string) bool {
 	filePath := j.getFilePath(username, mobileNumber)
 	_, err := os.Stat(filePath)
 	return !os.IsNotExist(err)
+}
+
+// List returns a list of all stored patient records with basic information
+func (j *JSONFileStorage) List() []datastructures.PatientListResponse {
+	var patients []datastructures.PatientListResponse
+
+	// Read all files in the directory
+	files, err := os.ReadDir(j.basePath)
+	if err != nil {
+		// Return empty slice if directory doesn't exist or can't be read
+		return patients
+	}
+
+	// Process each JSON file
+	for _, file := range files {
+		if file.IsDir() || filepath.Ext(file.Name()) != ".json" {
+			continue
+		}
+
+		// Load patient data from file
+		var patientData datastructures.PatientData
+		filePath := filepath.Join(j.basePath, file.Name())
+
+		fileHandle, err := os.Open(filePath)
+		if err != nil {
+			continue // Skip files that can't be opened
+		}
+
+		if err := json.NewDecoder(fileHandle).Decode(&patientData); err != nil {
+			fileHandle.Close()
+			continue // Skip files that can't be decoded
+		}
+		fileHandle.Close()
+
+		// Add to response list
+		patients = append(patients, datastructures.PatientListResponse{
+			FirstName: patientData.FirstName,
+			LastName:  patientData.LastName,
+			MobileNo:  patientData.MobileNo,
+		})
+	}
+
+	return patients
 }
